@@ -42,19 +42,19 @@ uploaded_file = st.file_uploader(
     "Üzüm yaprağı fotoğrafı yükleyin",
     type=["jpg", "jpeg", "png"]
 )
-
 if uploaded_file is not None:
-
     image = Image.open(uploaded_file).convert("RGB")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(image, caption="Yüklenen yaprak görüntüsü",
-                 use_container_width=True)
+        st.image(
+            image,
+            caption="Yüklenen yaprak görüntüsü",
+            use_container_width=True
+        )
 
-    # Görüntü ön işleme
-     img = image.resize((128, 128))
+    img = image.resize((128, 128))
     img_array = np.array(img).astype(np.float32) / 255.0
 
     if model_choice == "CNN":
@@ -62,13 +62,8 @@ if uploaded_file is not None:
 
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Tahmin
     if st.button("Hastalığı Tespit Et"):
-
-        selected_model = (
-            cnn_model if model_choice == "CNN"
-            else vgg_model
-        )
+        selected_model = cnn_model if model_choice == "CNN" else vgg_model
 
         prediction = selected_model.predict(img_array, verbose=0)[0]
 
@@ -86,6 +81,3 @@ if uploaded_file is not None:
             for label, probability in zip(labels, prediction):
                 st.write(f"{label}: %{probability * 100:.2f}")
                 st.progress(float(probability))
-
-st.divider()
-st.caption("Grape Disease Detection AI | CNN & Transfer Learning")
